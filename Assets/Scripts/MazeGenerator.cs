@@ -22,12 +22,14 @@ public class MazeGenerator : MonoBehaviour
         {
             //go by two
             floorObjects[past[i].x, past[i].y].GetComponent<Renderer>().material.color = Color.white;
-            floorObjects[past[i+1].x, past[i+1].y].GetComponent<Renderer>().material.color = Color.white;
+            floorObjects[past[i].x, past[i].y].transform.localScale = new Vector3(1, 1, 1);
+            floorObjects[past[i + 1].x, past[i + 1].y].GetComponent<Renderer>().material.color = Color.white;
+            floorObjects[past[i + 1].x, past[i + 1].y].transform.localScale = new Vector3(1, 1, 1);
             i += 2;
         }
         if (finished && i >= past.Count)
         {
-            GameObject.Destroy(this.gameObject);
+            //GameObject.Destroy(this.gameObject);
         }
 
     }

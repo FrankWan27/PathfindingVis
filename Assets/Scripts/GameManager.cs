@@ -13,9 +13,6 @@ public class GameManager : MonoBehaviour
         //Create Ground
         fm.Create();
         fm.Instantiate();
-
-        fm.GenerateMaze();
-
     }
 
     // Update is called once per frame
