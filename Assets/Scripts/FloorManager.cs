@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class FloorManager : MonoBehaviour
 {
-    public int[,] floor;
+    public Node[,] floor;
     public GameObject[,] floorObjects;
     public GameObject floorTile;
     public GameObject mazeGen;
@@ -20,7 +20,7 @@ public class FloorManager : MonoBehaviour
 
     public void Create()
     {
-        floor = new int[sizeX, sizeY];
+        floor = new Node[sizeX, sizeY];
     }
 
     public void Instantiate()
@@ -39,7 +39,7 @@ public class FloorManager : MonoBehaviour
             {
                 GameObject tile = Instantiate(floorTile, new Vector3(0.5f + i * 1f, 0 ,0.5f + j * 1f), Quaternion.identity);
                 floorObjects[i, j] = tile;
-                floor[i, j] = 0;
+                floor[i, j] = new Node(i, j, 0);
                 
                 tile.GetComponent<Renderer>().material.color = Color.white;
                 
@@ -74,11 +74,16 @@ public class FloorManager : MonoBehaviour
         {
             for (int j = 0; j < floor.GetLength(1); j++)
             {
-                floor[i, j] = 1;
+                floor[i, j].value = 1;
                 floorObjects[i, j].GetComponent<Renderer>().material.color = Color.black;
                 floorObjects[i, j].transform.localScale = new Vector3(0.9f, 1.8f, 0.9f);
             }
         }
+    }
+
+    public void ClearAllFloor()
+    {
+        Instantiate();
     }
 
     public void changeSize(float s)
@@ -94,6 +99,7 @@ public class FloorManager : MonoBehaviour
     {
         GameObject.Destroy(GameObject.Find("Floor"));
         GameObject.Destroy(GameObject.Find("MazeGenerator(Clone)"));
+        GameObject.Destroy(GameObject.Find("Floodfill(Clone)"));
 
     }
 }

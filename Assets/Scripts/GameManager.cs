@@ -48,9 +48,9 @@ public class GameManager : MonoBehaviour
             if (wallMode && x > -1 && y > -1 && !(x == pastX && y == pastY))
             {
                 Debug.Log("Flipping");
-                if (fm.floor[x, y] == 0)
+                if (fm.floor[x, y].value == 0)
                 {
-                    fm.floor[x, y] = 1;
+                    fm.floor[x, y].value = 1;
                     fm.floorObjects[x, y].GetComponent<Renderer>().material.color = Color.black;
                     fm.floorObjects[x, y].transform.localScale = new Vector3(0.9f, 1.8f, 0.9f);
                 }
@@ -86,6 +86,8 @@ public class GameManager : MonoBehaviour
 
             pastX = -1;
             pastY = -1;
+            startX = -1;
+            startY = -1;
 
         }
         else

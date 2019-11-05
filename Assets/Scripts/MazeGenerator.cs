@@ -6,7 +6,6 @@ public class MazeGenerator : MonoBehaviour
 {
     FloorManager fm;
     GameObject[,] floorObjects;
-    int[,] floor;
     List<Coord> past;
     int i = 0;
     bool finished = false;
@@ -39,11 +38,10 @@ public class MazeGenerator : MonoBehaviour
         finished = false;
         //starting pos needs to be even
         fm = GameObject.Find("GameManager").GetComponent<FloorManager>();
-        floor = fm.floor;
         floorObjects = fm.floorObjects;
 
-        int startX = Random.Range(0, floor.GetLength(0) / 2) * 2;
-        int startY = Random.Range(0, floor.GetLength(1) / 2) * 2;
+        int startX = Random.Range(0, fm.floor.GetLength(0) / 2) * 2;
+        int startY = Random.Range(0, fm.floor.GetLength(1) / 2) * 2;
         past = new List<Coord>();
 
         CarvePath(startX, startY);
@@ -85,12 +83,12 @@ public class MazeGenerator : MonoBehaviour
             int newX = currX + 2 * dx;
             int newY = currY + 2 * dy;
 
-            if (newX >= 0 && newX < floor.GetLength(0) && newY >= 0 && newY < floor.GetLength(1)) //if in bounds
+            if (newX >= 0 && newX < fm.floor.GetLength(0) && newY >= 0 && newY < fm.floor.GetLength(1)) //if in bounds
             {
-                if (floor[newX, newY] == 1) //if unvisited tile
+                if (fm.floor[newX, newY].value == 1) //if unvisited tile
                 {
-                    floor[newX, newY] = 0; //breakdown tile
-                    floor[newX - dx, newY - dy] = 0; //breakdown wall
+                    fm.floor[newX, newY].value = 0; //breakdown tile
+                    fm.floor[newX - dx, newY - dy].value = 0; //breakdown wall
                     past.Add(new Coord(newX - dx, newY - dy));
                     past.Add(new Coord(newX, newY));
                     CarvePath(newX, newY);

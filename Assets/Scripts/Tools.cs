@@ -29,3 +29,36 @@ public class Coord
         y = b;
     }
 }
+
+public class Node
+{
+    public int x;
+    public int y;
+    public int value;
+    public Node parent;
+
+    public Node(int a, int b)
+    {
+        x = a;
+        y = b;
+    }
+
+    public Node(int a, int b, int c)
+    {
+        x = a;
+        y = b;
+        value = c;
+    }
+
+    public Node(int a, int b, Node n)
+    {
+        x = a;
+        y = b;
+        parent = n;
+    }
+
+    public Coord GetCoord()
+    {
+        return new Coord(x, y);
+    }
+}

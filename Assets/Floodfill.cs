@@ -12,18 +12,21 @@ public class Floodfill : MonoBehaviour
     Queue<Coord> q;
     int lastX = -1;
     int lastY = -1;
+    List<Coord> path;
+    bool finishFill = false;
+    int travel;
 
     // Start is called before the first frame update
     void Start()
     {
         fm = GameObject.Find("GameManager").GetComponent<FloorManager>();
-
+        path = new List<Coord>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if(startX != -1)
+        if(startX != -1 && !finishFill)
         {
            
             if(q.Count != 0)
@@ -35,15 +38,23 @@ public class Floodfill : MonoBehaviour
 
 
                 fm.floorObjects[n.x, n.y].GetComponent<Renderer>().material.color = Color.red;
-                fm.floorObjects[n.x, n.y].transform.localScale = new Vector3(0.9f, 0.9f * fm.floor[n.x, n.y] / 2, 0.9f);
                 if (lastX != -1)
-                    fm.floorObjects[lastX, lastY].GetComponent<Renderer>().material.color = Color.cyan;
+                    fm.floorObjects[lastX, lastY].GetComponent<Renderer>().material.color = Color.Lerp(Color.blue, Color.green, (float)fm.floor[lastX, lastY].value / 40);
 
 
                 if (n.x == endX && n.y == endY)
                 {
                     Debug.Log("Reached Destination");
+                    
+                    while(n.x != startX || n.y != startY)
+                    {
+                        n = fm.floor[n.x, n.y].parent.GetCoord();
+                        path.Add(n);
+                    }
+                    travel = path.Count - 2;
                     q.Clear();
+                    finishFill = true;
+
                     return;
                 }
 
@@ -53,9 +64,10 @@ public class Floodfill : MonoBehaviour
                     int newY = n.y + dy[i];
                     if (newX >= 0 && newX < fm.floor.GetLength(0) && newY >= 0 && newY < fm.floor.GetLength(1))
                     {
-                        if (fm.floor[newX, newY] <= 0)
+                        if (fm.floor[newX, newY].value <= 0)
                         {
-                            fm.floor[newX, newY] = fm.floor[n.x, n.y] + 1;
+                            fm.floor[newX, newY].parent = fm.floor[n.x, n.y];
+                            fm.floor[newX, newY].value = fm.floor[n.x, n.y].value + 1;
                             q.Enqueue(new Coord(newX, newY));
                         }
                     }
@@ -67,6 +79,12 @@ public class Floodfill : MonoBehaviour
 
             }
 
+        }
+
+        if(finishFill && travel >= 0)
+        {
+            fm.floorObjects[path[travel].x, path[travel].y].GetComponent<Renderer>().material.color = Color.yellow;
+            travel--;
         }
     }
 
@@ -81,7 +99,7 @@ public class Floodfill : MonoBehaviour
         q = new Queue<Coord>();
 
         q.Enqueue(new Coord(startX, startY));
-        fm.floor[startX, startY] = 0;
+        fm.floor[startX, startY].value = 1;
 
     }
 }
