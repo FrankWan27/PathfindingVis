@@ -6,6 +6,8 @@ public class GameManager : MonoBehaviour
 {
     // Start is called before the first frame update
     FloorManager fm;
+    public bool pathMode = false;
+    public bool wallMode = true;
 
     void Start()
     {
