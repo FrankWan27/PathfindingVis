@@ -12,6 +12,11 @@ public class GameManager : MonoBehaviour
     int pastX = -1;
     int pastY = -1;
 
+    int startX = -1;
+    int startY = -1;
+    int endX = -1;
+    int endY = -1;
+
     void Start()
     {
         fm = GetComponent<FloorManager>();
@@ -50,15 +55,38 @@ public class GameManager : MonoBehaviour
                     fm.floorObjects[x, y].transform.localScale = new Vector3(0.9f, 1.8f, 0.9f);
                 }
 
-                else if (fm.floor[x, y] == 1)
+                //else if (fm.floor[x, y] == 1)
+                //{
+                //    fm.floor[x, y] = 0;
+                //    fm.floorObjects[x, y].GetComponent<Renderer>().material.color = Color.white;
+                //    fm.floorObjects[x, y].transform.localScale = Vector3.one * 0.9f;
+                // }
+                pastX = x;
+                pastY = y;
+            }
+            
+            if(pathMode)
+            {
+                if(pastX == -1 && pastY == -1)
                 {
-                    fm.floor[x, y] = 0;
-                    fm.floorObjects[x, y].GetComponent<Renderer>().material.color = Color.white;
-                    fm.floorObjects[x, y].transform.localScale = Vector3.one * 0.9f;
+                    startX = x;
+                    startY = y;    
                 }
                 pastX = x;
                 pastY = y;
             }
+        }
+        else if(pathMode && pastX != -1 && pastY != -1)
+        {
+            endX = pastX;
+            endY = pastY;
+
+            Debug.Log("Path from [" + startX + ", " + startY + "] to [" + endX + ", " + endY + "]");
+            fm.FloodFill(startX, startY, endX, endY);
+
+            pastX = -1;
+            pastY = -1;
+
         }
         else
         {
@@ -67,10 +95,5 @@ public class GameManager : MonoBehaviour
         }
 
 
-    }
-
-    private void OnMouseDown()
-    {
-        
     }
 }

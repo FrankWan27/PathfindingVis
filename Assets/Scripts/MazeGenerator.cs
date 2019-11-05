@@ -29,7 +29,7 @@ public class MazeGenerator : MonoBehaviour
         }
         if (finished && i >= past.Count)
         {
-            //GameObject.Destroy(this.gameObject);
+            GameObject.Destroy(this.gameObject);
         }
 
     }
@@ -87,10 +87,10 @@ public class MazeGenerator : MonoBehaviour
 
             if (newX >= 0 && newX < floor.GetLength(0) && newY >= 0 && newY < floor.GetLength(1)) //if in bounds
             {
-                if (floor[newX, newY] == 0) //if unvisited tile
+                if (floor[newX, newY] == 1) //if unvisited tile
                 {
-                    floor[newX, newY] = 1; //breakdown tile
-                    floor[newX - dx, newY - dy] = 1; //breakdown wall
+                    floor[newX, newY] = 0; //breakdown tile
+                    floor[newX - dx, newY - dy] = 0; //breakdown wall
                     past.Add(new Coord(newX - dx, newY - dy));
                     past.Add(new Coord(newX, newY));
                     CarvePath(newX, newY);

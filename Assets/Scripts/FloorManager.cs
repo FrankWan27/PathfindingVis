@@ -8,6 +8,7 @@ public class FloorManager : MonoBehaviour
     public GameObject[,] floorObjects;
     public GameObject floorTile;
     public GameObject mazeGen;
+    public GameObject floodfill;
     public int sizeX;
     public int sizeY;
 
@@ -59,12 +60,21 @@ public class FloorManager : MonoBehaviour
         mg.Generate();
     }
 
+    public void FloodFill(int startX, int startY, int endX, int endY)
+    {
+        //DestroyObjects();
+        Floodfill ff = GameObject.Instantiate(floodfill, Vector3.zero, Quaternion.identity).GetComponent<Floodfill>();
+
+        ff.StartFlood(startX, startY, endX, endY);
+    }
+
     public void AllWallFloor()
     {
         for (int i = 0; i < floor.GetLength(0); i++)
         {
             for (int j = 0; j < floor.GetLength(1); j++)
             {
+                floor[i, j] = 1;
                 floorObjects[i, j].GetComponent<Renderer>().material.color = Color.black;
                 floorObjects[i, j].transform.localScale = new Vector3(0.9f, 1.8f, 0.9f);
             }
