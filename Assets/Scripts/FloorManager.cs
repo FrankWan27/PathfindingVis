@@ -36,7 +36,7 @@ public class FloorManager : MonoBehaviour
         {
             for (int j = 0; j < sizeY; j++)
             {
-                GameObject tile = Instantiate(floorTile, new Vector3(i * 1.1f, 0, j * 1.1f), Quaternion.identity);
+                GameObject tile = Instantiate(floorTile, new Vector3(0.5f + i * 1f, 0 ,0.5f + j * 1f), Quaternion.identity);
                 floorObjects[i, j] = tile;
                 floor[i, j] = 0;
                 
@@ -66,7 +66,7 @@ public class FloorManager : MonoBehaviour
             for (int j = 0; j < floor.GetLength(1); j++)
             {
                 floorObjects[i, j].GetComponent<Renderer>().material.color = Color.black;
-                floorObjects[i, j].transform.localScale = new Vector3(1, 2, 1);
+                floorObjects[i, j].transform.localScale = new Vector3(0.9f, 1.8f, 0.9f);
             }
         }
     }

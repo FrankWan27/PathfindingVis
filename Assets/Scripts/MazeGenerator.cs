@@ -22,9 +22,9 @@ public class MazeGenerator : MonoBehaviour
         {
             //go by two
             floorObjects[past[i].x, past[i].y].GetComponent<Renderer>().material.color = Color.white;
-            floorObjects[past[i].x, past[i].y].transform.localScale = new Vector3(1, 1, 1);
+            floorObjects[past[i].x, past[i].y].transform.localScale = Vector3.one * 0.9f;
             floorObjects[past[i + 1].x, past[i + 1].y].GetComponent<Renderer>().material.color = Color.white;
-            floorObjects[past[i + 1].x, past[i + 1].y].transform.localScale = new Vector3(1, 1, 1);
+            floorObjects[past[i + 1].x, past[i + 1].y].transform.localScale = Vector3.one * 0.9f;
             i += 2;
         }
         if (finished && i >= past.Count)
