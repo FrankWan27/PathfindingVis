@@ -20,10 +20,8 @@ public class MazeGenerator : MonoBehaviour
         if (finished && i < past.Count)
         {
             //go by two
-            floorObjects[past[i].x, past[i].y].GetComponent<Renderer>().material.color = Color.white;
-            floorObjects[past[i].x, past[i].y].transform.localScale = Vector3.one * 0.9f;
-            floorObjects[past[i + 1].x, past[i + 1].y].GetComponent<Renderer>().material.color = Color.white;
-            floorObjects[past[i + 1].x, past[i + 1].y].transform.localScale = Vector3.one * 0.9f;
+            fm.ResetBlock(past[i].x, past[i].y);
+            fm.ResetBlock(past[i + 1].x, past[i + 1].y);
             i += 2;
         }
         if (finished && i >= past.Count)

@@ -17,85 +17,101 @@ public class GameManager : MonoBehaviour
     int endX = -1;
     int endY = -1;
 
+    GameObject arrowBase;
+    GameObject arrowBody;
+
     void Start()
     {
         fm = GetComponent<FloorManager>();
+
         //Create Ground
         fm.Create();
         fm.Instantiate();
+
+        arrowBase = GameObject.Find("ArrowBase");
+        arrowBody = GameObject.Find("ArrowBody");
+        arrowBase.SetActive(false);
+        arrowBody.SetActive(false);
     }
 
     // Update is called once per frame
     void Update()
     {
-        
-        if (Input.GetMouseButton(0))
+        Vector3 clickPosition = -Vector3.one;
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hit;
+
+        if (Physics.Raycast(ray, out hit))
         {
-            Vector3 clickPosition = -Vector3.one;
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hit;
-
-            if (Physics.Raycast(ray, out hit))
-            {
-                clickPosition = hit.point;
-            }
-
-            int x = Mathf.FloorToInt(clickPosition.x);
-            int y = Mathf.FloorToInt(clickPosition.z);
-
-            Debug.Log(x + " " + y);
-
-            if (wallMode && x > -1 && y > -1 && !(x == pastX && y == pastY))
-            {
-                Debug.Log("Flipping");
-                if (fm.floor[x, y].value == 0)
-                {
-                    fm.floor[x, y].value = 1;
-                    fm.floorObjects[x, y].GetComponent<Renderer>().material.color = Color.black;
-                    fm.floorObjects[x, y].transform.localScale = new Vector3(0.9f, 1.8f, 0.9f);
-                }
-
-                //else if (fm.floor[x, y] == 1)
-                //{
-                //    fm.floor[x, y] = 0;
-                //    fm.floorObjects[x, y].GetComponent<Renderer>().material.color = Color.white;
-                //    fm.floorObjects[x, y].transform.localScale = Vector3.one * 0.9f;
-                // }
-                pastX = x;
-                pastY = y;
-            }
-            
-            if(pathMode)
-            {
-                if(pastX == -1 && pastY == -1)
-                {
-                    startX = x;
-                    startY = y;    
-                }
-                pastX = x;
-                pastY = y;
-            }
+            clickPosition = hit.point;
         }
-        else if(Input.GetMouseButtonUp(0) && pathMode && pastX != -1 && pastY != -1)
+
+        int x = Mathf.FloorToInt(clickPosition.x);
+        int y = Mathf.FloorToInt(clickPosition.z);
+
+        if (x > -1 && y > -1)
         {
-            endX = pastX;
-            endY = pastY;
+            if (Input.GetMouseButton(0) && wallMode)
+            {
 
-            //Debug.Log("Path from [" + startX + ", " + startY + "] to [" + endX + ", " + endY + "]");
-            Debug.Log(pastX + " " + pastY);
-            fm.FloodFill(startX, startY, endX, endY);
+                Debug.Log("Wall");
 
-            pastX = -1;
-            pastY = -1;
-            startX = -1;
-            startY = -1;
+                fm.WallBlock(x, y);
 
+
+            }
+            else if (Input.GetMouseButtonDown(0) && pathMode)
+            {
+                arrowBase.SetActive(true);
+                arrowBase.transform.position = new Vector3(x + 0.5f, 0.5f, y + 0.5f);
+                
+
+                startX = x;
+                startY = y;
+
+                pastX = x;
+                pastY = y;
+            }
+            else if (Input.GetMouseButton(0) && pathMode && startX != -1 && (x != startX || y != startY))
+            {
+                arrowBody.SetActive(true);
+                arrowBody.transform.position = new Vector3(startX, 2f, startY);
+
+                Debug.Log((y - startY) + " / " + (x - startX));
+                arrowBody.transform.rotation = Quaternion.Euler(0, -Mathf.Rad2Deg * Mathf.Tan((float)(y-startY)/(float)(x-startX)), 0);
+            }
+            else if (Input.GetMouseButtonUp(0) && pathMode)
+            {
+                arrowBase.SetActive(false);
+                arrowBody.SetActive(false);
+                endX = x;
+                endY = y;
+
+                Debug.Log("Path from [" + startX + ", " + startY + "] to [" + endX + ", " + endY + "]");
+                fm.FloodFill(startX, startY, endX, endY);
+
+                pastX = -1;
+                pastY = -1;
+                startX = -1;
+                startY = -1;
+
+            }
+            else if (Input.GetMouseButton(1))
+            {
+                if (wallMode && x > -1 && y > -1)
+                {
+                    Debug.Log("Walk");
+
+                    fm.ResetBlock(x, y);
+                }
+            }
         }
         else
         {
             pastX = -1;
             pastY = -1;
         }
+
 
 
     }

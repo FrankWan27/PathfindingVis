@@ -4,6 +4,7 @@ using UnityEngine;
 
 public static class Tools
 {
+    
     public static void Shuffle<T>(IList<T> list)
     {
         int n = list.Count;

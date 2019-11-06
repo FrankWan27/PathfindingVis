@@ -16,42 +16,49 @@ public class Floodfill : MonoBehaviour
     bool finishFill = false;
     int travel;
     float solution = 0;
-    
-    // Update is called once per frame
+
+    //define colors
+    Color purple = new Color(203f / 255f, 128f / 255f, 1f);
+    Color blue = new Color(128f / 255f, 154f / 255f, 1f);
+    Color green = new Color(128f / 255f, 1f, 159f / 255f);
+    Color red = new Color(1f, 128f / 255f, 128f / 255f);
+
     void Update()
     {
         if(startX != -1 && !finishFill)
         {
-           
-            if(q.Count != 0)
+
+            if (q.Count != 0)
             {
                 int[] dx = { 1, 0, -1, 0 };
                 int[] dy = { 0, 1, 0, -1 };
                 Coord n = q.Dequeue();
 
+                //color current block red
+                fm.ColorBlock(n.x, n.y, red);
 
-                fm.floorObjects[n.x, n.y].GetComponent<Renderer>().material.color = new Color(1f, 128f/255f, 128f/255f);
-
+                //if previous node was not start node, color it gradient
                 if (lastX != -1 && (lastX != startX || lastY != startY))
-                    fm.floorObjects[lastX, lastY].GetComponent<Renderer>().material.color = Color.Lerp(new Color(128f / 255f, 154f / 255f, 1f), new Color(128f / 255f, 1f, 159f/255f), (float)fm.floor[lastX, lastY].value / solution);
+                    fm.ColorBlock(lastX, lastY, Color.Lerp(blue, green, (float)fm.floor[lastX, lastY].value / solution));
 
-
+                //if we reach destination
                 if (n.x == endX && n.y == endY)
                 {
-                    Debug.Log("Reached Destination");
-                    
-                    while(n.x != startX || n.y != startY)
+
+                    //travel through parent nodes to store path
+                    while (n.x != startX || n.y != startY)
                     {
                         n = fm.floor[n.x, n.y].parent.GetCoord();
                         path.Add(n);
                     }
+                    // -2 instead of -1 because we dont want to overwrite starting node
                     travel = path.Count - 2;
                     q.Clear();
                     finishFill = true;
-
                     return;
                 }
 
+                //add neighbors to queue if unvisited
                 for (int i = 0; i < 4; i++)
                 {
                     int newX = n.x + dx[i];
@@ -72,12 +79,17 @@ public class Floodfill : MonoBehaviour
 
 
             }
-
+            else
+            {
+                //if we run out of nodes to explore, finish coloring
+                if (lastX != -1 && (lastX != startX || lastY != startY))
+                    fm.ColorBlock(lastX, lastY, Color.Lerp(blue, green, (float)fm.floor[lastX, lastY].value / solution));
+            }
         }
 
         if(finishFill && travel >= 0)
         {
-            fm.floorObjects[path[travel].x, path[travel].y].GetComponent<Renderer>().material.color = new Color(203f/255f, 128f/255f, 1f);
+            fm.ColorBlock(path[travel].x, path[travel].y, purple);
             travel--;
         }
     }
@@ -137,6 +149,7 @@ public class Floodfill : MonoBehaviour
                 {
                     if (temp[newX, newY] <= 0)
                     {
+                        solution = temp[n.x, n.y] + 1;
                         temp[newX, newY] = temp[n.x, n.y] + 1;
                         tempQ.Enqueue(new Coord(newX, newY));
                     }

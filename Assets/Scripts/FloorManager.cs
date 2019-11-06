@@ -42,7 +42,6 @@ public class FloorManager : MonoBehaviour
                 floor[i, j] = new Node(i, j, 0);
                 
                 tile.GetComponent<Renderer>().material.color = Color.white;
-                
                 tile.transform.parent = parent.transform;
             }
         }
@@ -74,9 +73,7 @@ public class FloorManager : MonoBehaviour
         {
             for (int j = 0; j < floor.GetLength(1); j++)
             {
-                floor[i, j].value = 1;
-                floorObjects[i, j].GetComponent<Renderer>().material.color = Color.black;
-                floorObjects[i, j].transform.localScale = new Vector3(0.9f, 1.8f, 0.9f);
+                WallBlock(i, j);
             }
         }
     }
@@ -86,7 +83,7 @@ public class FloorManager : MonoBehaviour
         Instantiate();
     }
 
-    public void changeSize(float s)
+    public void ChangeSize(float s)
     {
         DestroyObjects();
         sizeX = Mathf.RoundToInt(s);
@@ -102,5 +99,31 @@ public class FloorManager : MonoBehaviour
         GameObject.Destroy(GameObject.Find("Floodfill(Clone)"));
 
     }
+
+    public void ColorBlock(int x, int y, float r, float g, float b)
+    {
+        ColorBlock(x, y, new Color(r / 255f, g / 255f, b /255f));
+    }
+
+    public void ColorBlock(int x, int y, Color c)
+    {
+        floorObjects[x, y].GetComponent<Renderer>().material.color = c;
+    }
+
+    public void ResetBlock(int x, int y)
+    {
+        floor[x, y].value = 0;
+        ColorBlock(x, y, Color.white);
+        floorObjects[x, y].transform.localScale = Vector3.one * 0.9f;
+    }
+
+    public void WallBlock(int x, int y)
+    {
+        floor[x, y].value = 1;
+        ColorBlock(x, y, Color.black);
+        floorObjects[x, y].transform.localScale = new Vector3(0.9f, 1.8f, 0.9f);
+    }
+
+
 }
 

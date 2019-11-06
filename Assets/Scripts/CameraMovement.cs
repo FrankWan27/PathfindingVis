@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class CameraMovement : MonoBehaviour
 {
-
+    GameManager gm;
     /*
 	EXTENDED FLYCAM
 		Desi Quintans (CowfaceGames.com), 17 August 2012.
@@ -30,15 +30,16 @@ public class CameraMovement : MonoBehaviour
     public float fastMoveFactor = 3;
 
     private float rotationX = 0.0f;
-    private float rotationY = 0.0f;
+    private float rotationY = -60.0f;
 
     void Start()
     {
+        gm = GameObject.FindObjectOfType<GameManager>();
     }
 
     void Update()
     {
-        if (Input.GetKey(KeyCode.Mouse1))
+        if (Input.GetKey(KeyCode.Mouse1) && !gm.wallMode)
         {
             rotationX += Input.GetAxis("Mouse X") * cameraSensitivity * Time.deltaTime;
             rotationY += Input.GetAxis("Mouse Y") * cameraSensitivity * Time.deltaTime;
