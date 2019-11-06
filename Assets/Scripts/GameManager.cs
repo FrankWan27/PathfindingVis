@@ -76,12 +76,13 @@ public class GameManager : MonoBehaviour
                 pastY = y;
             }
         }
-        else if(pathMode && pastX != -1 && pastY != -1)
+        else if(Input.GetMouseButtonUp(0) && pathMode && pastX != -1 && pastY != -1)
         {
             endX = pastX;
             endY = pastY;
 
-            Debug.Log("Path from [" + startX + ", " + startY + "] to [" + endX + ", " + endY + "]");
+            //Debug.Log("Path from [" + startX + ", " + startY + "] to [" + endX + ", " + endY + "]");
+            Debug.Log(pastX + " " + pastY);
             fm.FloodFill(startX, startY, endX, endY);
 
             pastX = -1;
