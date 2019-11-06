@@ -5,6 +5,7 @@ using UnityEngine;
 public class Floodfill : MonoBehaviour
 {
     FloorManager fm;
+    Node[,] nodes;
     int startX = -1;
     int startY = -1;
     int endX = -1;
@@ -39,7 +40,7 @@ public class Floodfill : MonoBehaviour
 
                 //if previous node was not start node, color it gradient
                 if (lastX != -1 && (lastX != startX || lastY != startY))
-                    fm.ColorBlock(lastX, lastY, Color.Lerp(blue, green, (float)fm.floor[lastX, lastY].value / solution));
+                    fm.ColorBlock(lastX, lastY, Color.Lerp(blue, green, (float)nodes[lastX, lastY].value / solution));
 
                 //if we reach destination
                 if (n.x == endX && n.y == endY)
@@ -48,7 +49,7 @@ public class Floodfill : MonoBehaviour
                     //travel through parent nodes to store path
                     while (n.x != startX || n.y != startY)
                     {
-                        n = fm.floor[n.x, n.y].parent.GetCoord();
+                        n = nodes[n.x, n.y].parent.GetCoord();
                         path.Add(n);
                     }
                     // -2 instead of -1 because we dont want to overwrite starting node
@@ -65,10 +66,10 @@ public class Floodfill : MonoBehaviour
                     int newY = n.y + dy[i];
                     if (newX >= 0 && newX < fm.floor.GetLength(0) && newY >= 0 && newY < fm.floor.GetLength(1))
                     {
-                        if (fm.floor[newX, newY].value <= 0)
+                        if (nodes[newX, newY].value <= 0)
                         {
-                            fm.floor[newX, newY].parent = fm.floor[n.x, n.y];
-                            fm.floor[newX, newY].value = fm.floor[n.x, n.y].value + 1;
+                            nodes[newX, newY].parent = nodes[n.x, n.y];
+                            nodes[newX, newY].value = nodes[n.x, n.y].value + 1;
                             q.Enqueue(new Coord(newX, newY));
                         }
                     }
@@ -83,7 +84,7 @@ public class Floodfill : MonoBehaviour
             {
                 //if we run out of nodes to explore, finish coloring
                 if (lastX != -1 && (lastX != startX || lastY != startY))
-                    fm.ColorBlock(lastX, lastY, Color.Lerp(blue, green, (float)fm.floor[lastX, lastY].value / solution));
+                    fm.ColorBlock(lastX, lastY, Color.Lerp(blue, green, (float)nodes[lastX, lastY].value / solution));
             }
         }
 
@@ -105,9 +106,9 @@ public class Floodfill : MonoBehaviour
         q = new Queue<Coord>();
         fm = GameObject.Find("GameManager").GetComponent<FloorManager>();
         path = new List<Coord>();
+        nodes = new Node[fm.floor.GetLength(0), fm.floor.GetLength(1)];
 
         q.Enqueue(new Coord(startX, startY));
-        fm.floor[startX, startY].value = 1;
 
         //calculate solution in advance to determine colors
         FloodFill();
@@ -121,9 +122,14 @@ public class Floodfill : MonoBehaviour
         {
             for(int j = 0; j < fm.floor.GetLength(1); j++)
             {
+                nodes[i, j] = new Node(fm.floor[i, j].x, fm.floor[i, j].y, fm.floor[i, j].value);
                 temp[i, j] = fm.floor[i, j].value;
             }
         }
+
+        //setup for live update version
+        nodes[startX, startY].value = 1;
+
 
         Queue<Coord> tempQ = new Queue<Coord>();
         tempQ.Enqueue(new Coord(startX, startY));

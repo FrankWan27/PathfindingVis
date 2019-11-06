@@ -44,11 +44,11 @@ public class Node
         y = b;
     }
 
-    public Node(int a, int b, int c)
+    public Node(int a, int b, int v)
     {
         x = a;
         y = b;
-        value = c;
+        value = v;
     }
 
     public Node(int a, int b, Node n)

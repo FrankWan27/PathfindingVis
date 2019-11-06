@@ -9,6 +9,8 @@ public class GameManager : MonoBehaviour
     public bool pathMode = false;
     public bool wallMode = true;
 
+    int algorithm = 0;
+
     int pastX = -1;
     int pastY = -1;
 
@@ -16,6 +18,9 @@ public class GameManager : MonoBehaviour
     int startY = -1;
     int endX = -1;
     int endY = -1;
+
+    Color lightRed = new Color(1f, 222f / 255f, 222f / 255f);
+    Color red = new Color(1f, 128f / 255f, 128f / 255f);
 
     GameObject arrowBase;
     LineRendererArrow arrowBody;
@@ -49,73 +54,105 @@ public class GameManager : MonoBehaviour
         int x = Mathf.FloorToInt(clickPosition.x);
         int y = Mathf.FloorToInt(clickPosition.z);
 
-        if (x > -1 && y > -1)
+
+
+        if (x > -1 && y > -1) //if mouse is within bounds
         {
-            if (Input.GetMouseButton(0) && wallMode)
+            if (Input.GetMouseButton(0) && wallMode) //LMB while in wall mode
             {
-
-                Debug.Log("Wall");
-
                 fm.WallBlock(x, y);
-
-
             }
-            else if (Input.GetMouseButtonDown(0) && pathMode)
+            else if (Input.GetMouseButton(1) && wallMode) //RMB while in wall mode
             {
-                arrowBase.SetActive(true);
-                arrowBase.transform.position = new Vector3(x + 0.5f, 0.7f, y + 0.5f);
-                
-
-                startX = x;
-                startY = y;
-
-                pastX = x;
-                pastY = y;
+                fm.ResetBlock(x, y);
             }
-            else if (Input.GetMouseButton(0) && pathMode && startX != -1 && (x != startX || y != startY))
+            else if (Input.GetMouseButtonDown(0) && pathMode) //LMB on click while in path mode
             {
-                arrowBody.gameObject.SetActive(true);
+                if (fm.floor[x, y].value == 0)
+                {
+                    arrowBase.SetActive(true);
+                    arrowBase.transform.position = new Vector3(x + 0.5f, 0.7f, y + 0.5f);
 
-                arrowBody.ArrowOrigin = new Vector3(startX + 0.5f, 0.7f, startY + 0.5f);
-                arrowBody.ArrowTarget = new Vector3(x + 0.5f, 0.7f, y + 0.5f);
-                arrowBody.UpdateArrow();
-
-               
-
+                    startX = x;
+                    startY = y;
+                }
             }
-            else if (Input.GetMouseButtonUp(0) && pathMode)
+            else if (Input.GetMouseButton(0) && pathMode && startX != -1) //dragging LMB
+            {
+
+                if ((x != startX || y != startY)) // off start node
+                {
+                    arrowBody.gameObject.SetActive(true);
+
+                    arrowBody.ArrowOrigin = new Vector3(startX + 0.5f, 0.7f, startY + 0.5f);
+                    arrowBody.ArrowTarget = new Vector3(x + 0.5f, 0.7f, y + 0.5f);
+                    arrowBody.UpdateArrow();
+                }
+                else //still on start node
+                {
+                    arrowBody.gameObject.SetActive(false);
+                }
+
+                if (fm.floor[x, y].value != 0) //if hovering over wall
+                {
+                    arrowBody.GetComponent<Renderer>().material.color = lightRed;
+                    arrowBase.GetComponent<Renderer>().material.color = lightRed;
+                }
+                else
+                {
+                    arrowBody.GetComponent<Renderer>().material.color = red;
+                    arrowBase.GetComponent<Renderer>().material.color = red;
+                }
+
+
+                if (Input.GetMouseButtonDown(1)) //press RMB while holding LMB will cancel
+                {
+                    arrowBase.SetActive(false);
+                    arrowBody.gameObject.SetActive(false);
+
+                    startX = -1;
+                    startY = -1;
+                }
+            }
+            else if (Input.GetMouseButtonUp(0) && pathMode && startX >= 0) //released LMB 
             {
                 arrowBase.SetActive(false);
                 arrowBody.gameObject.SetActive(false);
                 endX = x;
                 endY = y;
 
-                Debug.Log("Path from [" + startX + ", " + startY + "] to [" + endX + ", " + endY + "]");
-                fm.FloodFill(startX, startY, endX, endY);
-
-                pastX = -1;
-                pastY = -1;
+                //check bounds for inputs
+                if (fm.floor[endX, endY].value == 0)
+                {
+                    Debug.Log("Path from [" + startX + ", " + startY + "] to [" + endX + ", " + endY + "] using algorithm " + algorithm );
+                    if (algorithm == 0)
+                        fm.FloodFill(startX, startY, endX, endY);
+                    else if (algorithm == 1)
+                        fm.Greedy(startX, startY, endX, endY);
+                }
                 startX = -1;
                 startY = -1;
+                
 
             }
-            else if (Input.GetMouseButton(1))
-            {
-                if (wallMode && x > -1 && y > -1)
-                {
-                    Debug.Log("Walk");
 
-                    fm.ResetBlock(x, y);
-                }
-            }
+        }
+        else if (Input.GetMouseButtonUp(0) && pathMode) //let go of LMB while not on map
+        {
+            arrowBase.SetActive(false);
+            arrowBody.gameObject.SetActive(false);
+
+            startX = -1;
+            startY = -1;
         }
         else
-        {
-            pastX = -1;
-            pastY = -1;
+        { 
+
         }
+    }
 
-
-
+    public void changeAlgorithm(int v)
+    {
+        algorithm = v;
     }
 }

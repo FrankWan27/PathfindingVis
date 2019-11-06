@@ -9,14 +9,9 @@ public class FloorManager : MonoBehaviour
     public GameObject floorTile;
     public GameObject mazeGen;
     public GameObject floodfill;
+    public GameObject greedy;
     public int sizeX;
     public int sizeY;
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 
     public void Create()
     {
@@ -61,10 +56,19 @@ public class FloorManager : MonoBehaviour
 
     public void FloodFill(int startX, int startY, int endX, int endY)
     {
-        //DestroyObjects();
+
+        ClearPath();
         Floodfill ff = GameObject.Instantiate(floodfill, Vector3.zero, Quaternion.identity).GetComponent<Floodfill>();
 
         ff.StartFlood(startX, startY, endX, endY);
+    }
+
+    public void Greedy(int startX, int startY, int endX, int endY)
+    {
+        ClearPath();
+        Greedy g = GameObject.Instantiate(greedy, Vector3.zero, Quaternion.identity).GetComponent<Greedy>();
+
+        g.StartGreed(startX, startY, endX, endY);
     }
 
     public void AllWallFloor()
@@ -82,6 +86,22 @@ public class FloorManager : MonoBehaviour
     {
         Instantiate();
     }
+    
+    public void ClearPath()
+    {
+
+        DestroyPathfind();
+        for (int i = 0; i < sizeX; i++)
+        {
+            for (int j = 0; j < sizeY; j++)
+            {
+                if (floor[i, j].value == 1)
+                    WallBlock(i, j);
+                else if (floor[i, j].value == 0)
+                    ResetBlock(i, j);
+            }
+        }
+    }
 
     public void ChangeSize(float s)
     {
@@ -96,8 +116,13 @@ public class FloorManager : MonoBehaviour
     {
         GameObject.Destroy(GameObject.Find("Floor"));
         GameObject.Destroy(GameObject.Find("MazeGenerator(Clone)"));
-        GameObject.Destroy(GameObject.Find("Floodfill(Clone)"));
+        DestroyPathfind();
+    }
 
+    public void DestroyPathfind()
+    {
+        GameObject.Destroy(GameObject.Find("Floodfill(Clone)"));
+        GameObject.Destroy(GameObject.Find("Greedy(Clone)"));
     }
 
     public void ColorBlock(int x, int y, float r, float g, float b)
