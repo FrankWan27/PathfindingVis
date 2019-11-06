@@ -18,7 +18,7 @@ public class GameManager : MonoBehaviour
     int endY = -1;
 
     GameObject arrowBase;
-    GameObject arrowBody;
+    LineRendererArrow arrowBody;
 
     void Start()
     {
@@ -29,9 +29,9 @@ public class GameManager : MonoBehaviour
         fm.Instantiate();
 
         arrowBase = GameObject.Find("ArrowBase");
-        arrowBody = GameObject.Find("ArrowBody");
+        arrowBody = GameObject.Find("ArrowBody").GetComponent<LineRendererArrow>();
         arrowBase.SetActive(false);
-        arrowBody.SetActive(false);
+        arrowBody.gameObject.SetActive(false);
     }
 
     // Update is called once per frame
@@ -63,7 +63,7 @@ public class GameManager : MonoBehaviour
             else if (Input.GetMouseButtonDown(0) && pathMode)
             {
                 arrowBase.SetActive(true);
-                arrowBase.transform.position = new Vector3(x + 0.5f, 0.5f, y + 0.5f);
+                arrowBase.transform.position = new Vector3(x + 0.5f, 0.7f, y + 0.5f);
                 
 
                 startX = x;
@@ -74,16 +74,19 @@ public class GameManager : MonoBehaviour
             }
             else if (Input.GetMouseButton(0) && pathMode && startX != -1 && (x != startX || y != startY))
             {
-                arrowBody.SetActive(true);
-                arrowBody.transform.position = new Vector3(startX, 2f, startY);
+                arrowBody.gameObject.SetActive(true);
 
-                Debug.Log((y - startY) + " / " + (x - startX));
-                arrowBody.transform.rotation = Quaternion.Euler(0, -Mathf.Rad2Deg * Mathf.Tan((float)(y-startY)/(float)(x-startX)), 0);
+                arrowBody.ArrowOrigin = new Vector3(startX + 0.5f, 0.7f, startY + 0.5f);
+                arrowBody.ArrowTarget = new Vector3(x + 0.5f, 0.7f, y + 0.5f);
+                arrowBody.UpdateArrow();
+
+               
+
             }
             else if (Input.GetMouseButtonUp(0) && pathMode)
             {
                 arrowBase.SetActive(false);
-                arrowBody.SetActive(false);
+                arrowBody.gameObject.SetActive(false);
                 endX = x;
                 endY = y;
 

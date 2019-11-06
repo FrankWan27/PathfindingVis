@@ -40,8 +40,8 @@ public class FloorManager : MonoBehaviour
                 GameObject tile = Instantiate(floorTile, new Vector3(0.5f + i * 1f, 0 ,0.5f + j * 1f), Quaternion.identity);
                 floorObjects[i, j] = tile;
                 floor[i, j] = new Node(i, j, 0);
-                
-                tile.GetComponent<Renderer>().material.color = Color.white;
+
+                ResetBlock(i, j);
                 tile.transform.parent = parent.transform;
             }
         }
@@ -114,14 +114,14 @@ public class FloorManager : MonoBehaviour
     {
         floor[x, y].value = 0;
         ColorBlock(x, y, Color.white);
-        floorObjects[x, y].transform.localScale = Vector3.one * 0.9f;
+        floorObjects[x, y].transform.localScale = Vector3.one * 0.92f;
     }
 
     public void WallBlock(int x, int y)
     {
         floor[x, y].value = 1;
         ColorBlock(x, y, Color.black);
-        floorObjects[x, y].transform.localScale = new Vector3(0.9f, 1.8f, 0.9f);
+        floorObjects[x, y].transform.localScale = new Vector3(0.92f, 2f, 0.92f);
     }
 
 
