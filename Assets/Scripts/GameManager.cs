@@ -9,6 +9,8 @@ public class GameManager : MonoBehaviour
     public bool pathMode = false;
     public bool wallMode = true;
 
+    int mapMode = 0;
+
     int algorithm = 0;
 
     int pastX = -1;
@@ -129,13 +131,19 @@ public class GameManager : MonoBehaviour
                         fm.FloodFill(startX, startY, endX, endY);
                     else if (algorithm == 1)
                         fm.Greedy(startX, startY, endX, endY);
+                    else if (algorithm == 2)
+                        fm.AStar(startX, startY, endX, endY);
                 }
                 startX = -1;
                 startY = -1;
-                
 
             }
 
+        }
+        else if (Input.GetMouseButton(0) && pathMode) // holding LMB while not on map
+        {
+            arrowBody.GetComponent<Renderer>().material.color = lightRed;
+            arrowBase.GetComponent<Renderer>().material.color = lightRed;
         }
         else if (Input.GetMouseButtonUp(0) && pathMode) //let go of LMB while not on map
         {
@@ -154,5 +162,26 @@ public class GameManager : MonoBehaviour
     public void changeAlgorithm(int v)
     {
         algorithm = v;
+    }
+
+    public void changeMap(int v)
+    {
+        mapMode = v;
+    }
+
+    public void createMap()
+    {
+        if (mapMode == 0)
+        {
+            fm.ClearAllFloor();
+        }
+        else if (mapMode == 1)
+        {
+            fm.GenerateMaze();
+        }
+        else if (mapMode == 2)
+        {
+            fm.GenerateNoise();
+        }
     }
 }

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Greedy : MonoBehaviour
+public class AStar : MonoBehaviour
 {
     FloorManager fm;
     Node[,] nodes;
@@ -13,7 +13,7 @@ public class Greedy : MonoBehaviour
     int lastX = -1;
     int lastY = -1;
     float solution = 0;
-    bool finishGreed = false;
+    bool finishAStar = false;
     List<Coord> path;
     int travel = -1;
     MinHeap mh;
@@ -28,7 +28,7 @@ public class Greedy : MonoBehaviour
     private void Update()
     {
 
-        if (startX != -1 && !finishGreed)
+        if (startX != -1 && !finishAStar)
         {
             if (mh.HasNext())
             {
@@ -56,7 +56,7 @@ public class Greedy : MonoBehaviour
                     }
                     // -2 instead of -1 because we dont want to overwrite starting node
                     travel = path.Count - 2;
-                    finishGreed = true;
+                    finishAStar = true;
                     return;
                 }
 
@@ -69,12 +69,17 @@ public class Greedy : MonoBehaviour
                     int newY = n.y + dy[i];
                     if (newX >= 0 && newX < fm.floor.GetLength(0) && newY >= 0 && newY < fm.floor.GetLength(1))
                     {
-                        //check if unvisited
-                        if (nodes[newX, newY].value <= 0)
+                        //if not a wall
+                        if (fm.floor[newX, newY].value == 0)
                         {
-                            nodes[newX, newY].parent = nodes[n.x, n.y];
-                            nodes[newX, newY].value = nodes[n.x, n.y].value + 1;
-                            mh.Insert(nodes[newX, newY]);
+                            float tempH = nodes[n.x, n.y].value + 1 + Vector2.Distance(new Vector2(newX, newY), new Vector2(endX, endY));
+                            if (tempH < nodes[newX, newY].heuristic)
+                            {
+                                nodes[newX, newY].heuristic = tempH;
+                                nodes[newX, newY].value = nodes[n.x, n.y].value + 1;
+                                nodes[newX, newY].parent = nodes[n.x, n.y];
+                                mh.Insert(nodes[newX, newY]);
+                            }
                         }
                     }
                 }
@@ -87,14 +92,14 @@ public class Greedy : MonoBehaviour
             }
         }
 
-        if(finishGreed && travel >= 0)
+        if (finishAStar && travel >= 0)
         {
             fm.ColorBlock(path[travel].x, path[travel].y, purple);
             travel--;
         }
     }
 
-    public void StartGreed(int sX, int sY, int eX, int eY)
+    public void StartAStar(int sX, int sY, int eX, int eY)
     {
         startX = sX;
         startY = sY;
@@ -106,10 +111,10 @@ public class Greedy : MonoBehaviour
 
         nodes = new Node[fm.floor.GetLength(0), fm.floor.GetLength(1)];
         //calculate solution in advance to determine colors
-        GreedEarly();
+        AStarEarly();
     }
 
-    void GreedEarly()
+    void AStarEarly()
     {
         Node[,] temp = new Node[fm.floor.GetLength(0), fm.floor.GetLength(1)];
         for (int i = 0; i < fm.floor.GetLength(0); i++)
@@ -118,19 +123,21 @@ public class Greedy : MonoBehaviour
             {
                 nodes[i, j] = new Node(fm.floor[i, j].x, fm.floor[i, j].y, fm.floor[i, j].value);
                 temp[i, j] = new Node(fm.floor[i, j].x, fm.floor[i, j].y, fm.floor[i, j].value);
-                temp[i, j].heuristic = Vector2.Distance(new Vector2(i, j), new Vector2(endX, endY));
-                nodes[i, j].heuristic = Vector2.Distance(new Vector2(i, j), new Vector2(endX, endY));
+                temp[i, j].heuristic = float.MaxValue;
+                nodes[i, j].heuristic = float.MaxValue;
             }
         }
 
         mh.Insert(nodes[startX, startY]);
         MinHeap mhtemp = new MinHeap();
         mhtemp.Insert(temp[startX, startY]);
+        temp[startX, startY].heuristic = 1 + Vector2.Distance(new Vector2(startX, startY), new Vector2(endX, endY));
+        nodes[startX, startY].heuristic = 1 + Vector2.Distance(new Vector2(startX, startY), new Vector2(endX, endY));
 
         nodes[startX, startY].value = 1;
         temp[startX, startY].value = 1;
 
-        while(mhtemp.HasNext())
+        while (mhtemp.HasNext())
         {
             Node n = mhtemp.Pop();
 
@@ -150,14 +157,16 @@ public class Greedy : MonoBehaviour
                 int newY = n.y + dy[i];
                 if (newX >= 0 && newX < fm.floor.GetLength(0) && newY >= 0 && newY < fm.floor.GetLength(1))
                 {
-                    //check if unvisited
-                    if (temp[newX, newY].value <= 0)
+
+                    float tempH = temp[n.x, n.y].value + 1 + Vector2.Distance(new Vector2(newX, newY), new Vector2(endX, endY));
+                    if(tempH < temp[newX, newY].heuristic)
                     {
-                        temp[newX, newY].parent = temp[n.x, n.y];
                         solution = Mathf.Max(temp[n.x, n.y].value + 1);
+                        temp[newX, newY].heuristic = tempH;
                         temp[newX, newY].value = temp[n.x, n.y].value + 1;
+                        temp[newX, newY].parent = temp[n.x, n.y];
                         mhtemp.Insert(temp[newX, newY]);
-                    }
+                    }       
                 }
             }
         }

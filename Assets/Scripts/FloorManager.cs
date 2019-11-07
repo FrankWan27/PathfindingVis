@@ -10,6 +10,7 @@ public class FloorManager : MonoBehaviour
     public GameObject mazeGen;
     public GameObject floodfill;
     public GameObject greedy;
+    public GameObject aStar;
     public int sizeX;
     public int sizeY;
 
@@ -54,6 +55,21 @@ public class FloorManager : MonoBehaviour
         mg.Generate();
     }
 
+    public void GenerateNoise()
+    {
+        DestroyObjects();
+        Instantiate();
+        for (int i = 0; i < floor.GetLength(0); i++)
+        {
+            for (int j = 0; j < floor.GetLength(1); j++)
+            {
+                int r = Random.Range(0, 3);
+                if (r == 1)
+                    WallBlock(i, j);
+            }
+        }
+    }
+
     public void FloodFill(int startX, int startY, int endX, int endY)
     {
 
@@ -71,6 +87,14 @@ public class FloorManager : MonoBehaviour
         g.StartGreed(startX, startY, endX, endY);
     }
 
+    public void AStar(int startX, int startY, int endX, int endY)
+    {
+        ClearPath();
+        AStar a = GameObject.Instantiate(aStar, Vector3.zero, Quaternion.identity).GetComponent<AStar>();
+
+        a.StartAStar(startX, startY, endX, endY);
+    }
+
     public void AllWallFloor()
     {
         for (int i = 0; i < floor.GetLength(0); i++)
@@ -81,6 +105,7 @@ public class FloorManager : MonoBehaviour
             }
         }
     }
+
 
     public void ClearAllFloor()
     {
@@ -123,6 +148,7 @@ public class FloorManager : MonoBehaviour
     {
         GameObject.Destroy(GameObject.Find("Floodfill(Clone)"));
         GameObject.Destroy(GameObject.Find("Greedy(Clone)"));
+        GameObject.Destroy(GameObject.Find("AStar(Clone)"));
     }
 
     public void ColorBlock(int x, int y, float r, float g, float b)

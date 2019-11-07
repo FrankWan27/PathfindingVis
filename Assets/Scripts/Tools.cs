@@ -36,7 +36,9 @@ public class Node
     public int x;
     public int y;
     public int value;
+    public float heuristic;
     public Node parent;
+    public Node next;
 
     public Node(int a, int b)
     {
@@ -63,3 +65,51 @@ public class Node
         return new Coord(x, y);
     }
 }
+
+public class MinHeap
+{
+    private Node head;
+
+    public bool HasNext()
+    {
+        return this.head != null;
+    }
+
+    public void Insert(Node n)
+    {
+        if(this.head == null)
+        {
+            this.head = n;
+        }
+        else if(n.heuristic < this.head.heuristic)
+        {
+            n.next = this.head;
+            this.head = n;
+        }
+        else
+        {
+            Node cur = this.head;
+            while(cur.next != null && cur.next.heuristic <= n.heuristic)
+            {
+                cur = cur.next;
+            }
+            n.next = cur.next;
+            cur.next = n;
+        }
+    }
+
+    public Node Pop()
+    {
+        Node n = this.head;
+        this.head = this.head.next;
+
+        return n;
+    }
+
+    public void Clear()
+    {
+        this.head = null;
+    }
+}
+
+
