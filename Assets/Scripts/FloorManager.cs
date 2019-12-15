@@ -175,6 +175,17 @@ public class FloorManager : MonoBehaviour
         floorObjects[x, y].transform.localScale = new Vector3(0.92f, 2f, 0.92f);
     }
 
+    public void RaiseBlock(int x, int y, float h)
+    {
+        floor[x, y].height += h;
+    }
+
+    public void LowerBlock(int x, int y, float h)
+    {
+        floor[x, y].height += h;
+
+    }
+
 
 }
 

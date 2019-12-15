@@ -6,8 +6,9 @@ public class GameManager : MonoBehaviour
 {
     // Start is called before the first frame update
     FloorManager fm;
-    public bool pathMode = false;
+    public bool pathMode = true;
     public bool wallMode = true;
+    public bool heightMode = false;
 
     int mapMode = 0;
 
@@ -65,6 +66,14 @@ public class GameManager : MonoBehaviour
                 fm.WallBlock(x, y);
             }
             else if (Input.GetMouseButton(1) && wallMode) //RMB while in wall mode
+            {
+                fm.ResetBlock(x, y);
+            }
+            else if (Input.GetMouseButton(0) && heightMode) //LMB while in wall mode
+            {
+                fm.WallBlock(x, y);
+            }
+            else if (Input.GetMouseButton(1) && heightMode) //RMB while in wall mode
             {
                 fm.ResetBlock(x, y);
             }
@@ -159,7 +168,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void changeAlgorithm(int v)
+    public void changeAlgorithm(int v)                                                                          
     {
         algorithm = v;
     }

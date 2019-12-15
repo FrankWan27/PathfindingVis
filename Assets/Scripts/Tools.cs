@@ -37,6 +37,7 @@ public class Node
     public int y;
     public int value;
     public float heuristic;
+    public float height;
     public Node parent;
     public Node next;
 
@@ -51,6 +52,14 @@ public class Node
         x = a;
         y = b;
         value = v;
+    }
+
+    public Node(int a, int b, int v, float h)
+    {
+        x = a;
+        y = b;
+        value = v;
+        height = h;
     }
 
     public Node(int a, int b, Node n)
