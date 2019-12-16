@@ -14,9 +14,9 @@ public class GameManager : MonoBehaviour
     public Text distanceText;
     public float calcDist = 0;
 
-    int mapMode = 0;
+    public int mapMode = 0;
 
-    int algorithm = 0;
+    public int algorithm = 0;
 
     int pastX = -1;
     int pastY = -1;
@@ -32,6 +32,8 @@ public class GameManager : MonoBehaviour
     GameObject arrowBase;
     LineRendererArrow arrowBody;
 
+    HelpManager hm;
+
     void Start()
     {
         fm = GetComponent<FloorManager>();
@@ -44,6 +46,9 @@ public class GameManager : MonoBehaviour
         arrowBody = GameObject.Find("ArrowBody").GetComponent<LineRendererArrow>();
         arrowBase.SetActive(false);
         arrowBody.gameObject.SetActive(false);
+
+        hm = gameObject.GetComponent<HelpManager>();
+
     }
 
     // Update is called once per frame
@@ -179,11 +184,14 @@ public class GameManager : MonoBehaviour
     public void changeAlgorithm(int v)                                                                          
     {
         algorithm = v;
+        hm.UpdateHelp();
+
     }
 
     public void changeMap(int v)
     {
         mapMode = v;
+        hm.UpdateHelp();
     }
 
     public void createMap()
