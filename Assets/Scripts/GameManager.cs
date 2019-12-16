@@ -186,17 +186,29 @@ public class GameManager : MonoBehaviour
 
     public void createMap()
     {
-        if (mapMode == 0)
+        if (mapMode == 0) //Clear
         {
             fm.ClearAllFloor();
         }
-        else if (mapMode == 1)
+        else if (mapMode == 1) //Wall Maze
         {
-            fm.GenerateMaze();
+            fm.GenerateMaze(0);
         }
-        else if (mapMode == 2)
+        else if (mapMode == 2) //Tall Maze
         {
-            fm.GenerateNoise();
+            fm.GenerateMaze(1);
+        }
+        else if (mapMode == 3) //2D Noise
+        {
+            fm.GenerateNoise(3, true, 0, 0);
+        }
+        else if (mapMode == 4) //3D Noise
+        {
+            fm.GenerateNoise(0, false, 0, 20);
+        }
+        else if (mapMode == 5) //Pillars
+        {
+            fm.GenerateNoise(16, false, 14, 20);
         }
     }
 

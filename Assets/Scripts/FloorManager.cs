@@ -43,19 +43,20 @@ public class FloorManager : MonoBehaviour
         }
     }
 
-    public void GenerateMaze()
+    public void GenerateMaze(int option)
     {
+        //option = 0, generate Wall Maze
+        //option = 1, generate Tall Maze
         DestroyObjects();
         //Using Recursive Backtracking Algorithm
         //http://weblog.jamisbuck.org/2010/12/27/maze-generation-recursive-backtracking
         Instantiate();
-        AllWallFloor();
         MazeGenerator mg = GameObject.Instantiate(mazeGen, Vector3.zero, Quaternion.identity).GetComponent<MazeGenerator>();
 
-        mg.Generate();
+        mg.Generate(option);
     }
 
-    public void GenerateNoise()
+    public void GenerateNoise(int rand, bool wall, int minHeight, int maxHeight)
     {
         DestroyObjects();
         Instantiate();
@@ -63,9 +64,14 @@ public class FloorManager : MonoBehaviour
         {
             for (int j = 0; j < floor.GetLength(1); j++)
             {
-                int r = Random.Range(0, 3);
-                if (r == 1)
-                    WallBlock(i, j);
+                int r = Random.Range(0, rand);
+                if (r == 0)
+                {
+                    if(wall)
+                        WallBlock(i, j);
+                    else
+                        RaiseBlock(i, j, Random.Range(minHeight, maxHeight) * 0.5f);
+                }
             }
         }
     }
@@ -102,6 +108,17 @@ public class FloorManager : MonoBehaviour
             for (int j = 0; j < floor.GetLength(1); j++)
             {
                 WallBlock(i, j);
+            }
+        }
+    }
+
+    public void AllTallFloor(float h)
+    {
+        for (int i = 0; i < floor.GetLength(0); i++)
+        {
+            for (int j = 0; j < floor.GetLength(1); j++)
+            {
+                RaiseBlock(i, j, h);
             }
         }
     }
@@ -177,22 +194,30 @@ public class FloorManager : MonoBehaviour
 
     public void RaiseBlock(int x, int y, float h)
     {
+        if(floor[x, y].height >= 20)
+            return;
         floor[x, y].height += h;
         ResizeBlock(x, y);
-        floorObjects[x, y].transform.Translate(new Vector3(0, h/2, 0));
+        MoveBlock(x, y);
     }
 
     public void LowerBlock(int x, int y, float h)
     {
         floor[x, y].height -= h;
+        if(floor[x, y].height <= 0) //floor height at 0
+            floor[x, y].height = 0;
         ResizeBlock(x, y);
-        floorObjects[x, y].transform.Translate(new Vector3(0, -h/2, 0));
-
+        MoveBlock(x, y);
     }
 
     public void ResizeBlock(int x, int y)
     {
         floorObjects[x, y].transform.localScale = new Vector3(0.92f, 0.92f + floor[x, y].value + floor[x, y].height, 0.92f);
+    }
+
+    public void MoveBlock(int x, int y)
+    {
+        floorObjects[x, y].transform.localPosition = new Vector3(0.5f + x * 1f, floor[x, y].height / 2 ,0.5f + y * 1f);
     }
 
 }
