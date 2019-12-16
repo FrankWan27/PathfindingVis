@@ -17,6 +17,11 @@ public static class Tools
             list[n] = value;
         }
     }
+
+    public static float HeightDiff(Node a, Node b)
+    {
+        return Mathf.Abs(b.height - a.height);
+    }
 }
 
 public class Coord
@@ -35,7 +40,7 @@ public class Node
 {
     public int x;
     public int y;
-    public int value;
+    public float value;
     public float heuristic;
     public float height;
     public Node parent;
@@ -47,14 +52,14 @@ public class Node
         y = b;
     }
 
-    public Node(int a, int b, int v)
+    public Node(int a, int b, float v)
     {
         x = a;
         y = b;
         value = v;
     }
 
-    public Node(int a, int b, int v, float h)
+    public Node(int a, int b, float v, float h)
     {
         x = a;
         y = b;
@@ -73,6 +78,8 @@ public class Node
     {
         return new Coord(x, y);
     }
+
+
 }
 
 public class MinHeap

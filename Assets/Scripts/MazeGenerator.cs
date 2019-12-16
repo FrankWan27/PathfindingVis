@@ -20,8 +20,8 @@ public class MazeGenerator : MonoBehaviour
         if (finished && i < past.Count)
         {
             //go by two
-            fm.ResetBlock(past[i].x, past[i].y);
-            fm.ResetBlock(past[i + 1].x, past[i + 1].y);
+            fm.WalkBlock(past[i].x, past[i].y);
+            fm.WalkBlock(past[i + 1].x, past[i + 1].y);
             i += 2;
         }
         if (finished && i >= past.Count)

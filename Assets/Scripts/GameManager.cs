@@ -1,14 +1,18 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.UI;
+//fix wall/height interaction
 public class GameManager : MonoBehaviour
 {
     // Start is called before the first frame update
     FloorManager fm;
-    public bool pathMode = true;
+    public bool pathMode = false;
     public bool wallMode = true;
     public bool heightMode = false;
+
+    public Text distanceText;
+    public float calcDist = 0;
 
     int mapMode = 0;
 
@@ -45,6 +49,8 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        distanceText.text = "Distance: " + calcDist;
+
         Vector3 clickPosition = -Vector3.one;
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
@@ -67,15 +73,15 @@ public class GameManager : MonoBehaviour
             }
             else if (Input.GetMouseButton(1) && wallMode) //RMB while in wall mode
             {
-                fm.ResetBlock(x, y);
+                fm.WalkBlock(x, y);
             }
-            else if (Input.GetMouseButton(0) && heightMode) //LMB while in wall mode
+            else if (Input.GetMouseButton(0) && heightMode) //LMB while in height mode
             {
-                fm.WallBlock(x, y);
+                fm.RaiseBlock(x, y, 0.5f);
             }
-            else if (Input.GetMouseButton(1) && heightMode) //RMB while in wall mode
+            else if (Input.GetMouseButton(1) && heightMode) //RMB while in height mode
             {
-                fm.ResetBlock(x, y);
+                fm.LowerBlock(x, y, 0.5f);
             }
             else if (Input.GetMouseButtonDown(0) && pathMode) //LMB on click while in path mode
             {
@@ -192,5 +198,10 @@ public class GameManager : MonoBehaviour
         {
             fm.GenerateNoise();
         }
+    }
+
+    public void SetDist(float d)
+    {
+        calcDist = d;
     }
 }

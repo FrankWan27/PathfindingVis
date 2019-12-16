@@ -73,7 +73,7 @@ public class Greedy : MonoBehaviour
                         if (nodes[newX, newY].value <= 0)
                         {
                             nodes[newX, newY].parent = nodes[n.x, n.y];
-                            nodes[newX, newY].value = nodes[n.x, n.y].value + 1;
+                            nodes[newX, newY].value = nodes[n.x, n.y].value + 1 + Tools.HeightDiff(nodes[n.x, n.y], nodes[newX, newY]);
                             mh.Insert(nodes[newX, newY]);
                         }
                     }
@@ -116,10 +116,12 @@ public class Greedy : MonoBehaviour
         {
             for (int j = 0; j < fm.floor.GetLength(1); j++)
             {
-                nodes[i, j] = new Node(fm.floor[i, j].x, fm.floor[i, j].y, fm.floor[i, j].value);
-                temp[i, j] = new Node(fm.floor[i, j].x, fm.floor[i, j].y, fm.floor[i, j].value);
-                temp[i, j].heuristic = Vector2.Distance(new Vector2(i, j), new Vector2(endX, endY));
-                nodes[i, j].heuristic = Vector2.Distance(new Vector2(i, j), new Vector2(endX, endY));
+                nodes[i, j] = new Node(fm.floor[i, j].x, fm.floor[i, j].y, fm.floor[i, j].value, fm.floor[i,j].height);
+                temp[i, j] = new Node(fm.floor[i, j].x, fm.floor[i, j].y, fm.floor[i, j].value, fm.floor[i,j].height);
+
+                //heuristic needs work. Maybe start from end point and go outwards
+                temp[i, j].heuristic = Vector2.Distance(new Vector2(i, j), new Vector2(endX, endY)) + Tools.HeightDiff(fm.floor[i, j], fm.floor[endX, endY]);
+                nodes[i, j].heuristic = Vector2.Distance(new Vector2(i, j), new Vector2(endX, endY)) + Tools.HeightDiff(fm.floor[i, j], fm.floor[endX, endY]);
             }
         }
 
@@ -140,6 +142,7 @@ public class Greedy : MonoBehaviour
             if (n.x == endX && n.y == endY)
             {
                 solution = temp[endX, endY].value;
+                GameObject.Find("GameManager").GetComponent<GameManager>().SetDist(solution);
                 return;
 
             }
@@ -154,8 +157,7 @@ public class Greedy : MonoBehaviour
                     if (temp[newX, newY].value <= 0)
                     {
                         temp[newX, newY].parent = temp[n.x, n.y];
-                        solution = Mathf.Max(temp[n.x, n.y].value + 1);
-                        temp[newX, newY].value = temp[n.x, n.y].value + 1;
+                        temp[newX, newY].value = temp[n.x, n.y].value + 1 + Tools.HeightDiff(temp[n.x, n.y], temp[newX, newY]);
                         mhtemp.Insert(temp[newX, newY]);
                     }
                 }

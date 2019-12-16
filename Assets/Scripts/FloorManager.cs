@@ -35,9 +35,9 @@ public class FloorManager : MonoBehaviour
             {
                 GameObject tile = Instantiate(floorTile, new Vector3(0.5f + i * 1f, 0 ,0.5f + j * 1f), Quaternion.identity);
                 floorObjects[i, j] = tile;
-                floor[i, j] = new Node(i, j, 0);
+                floor[i, j] = new Node(i, j, 0, 0);
 
-                ResetBlock(i, j);
+                WalkBlock(i, j);
                 tile.transform.parent = parent.transform;
             }
         }
@@ -123,7 +123,7 @@ public class FloorManager : MonoBehaviour
                 if (floor[i, j].value == 1)
                     WallBlock(i, j);
                 else if (floor[i, j].value == 0)
-                    ResetBlock(i, j);
+                    WalkBlock(i, j);
             }
         }
     }
@@ -161,31 +161,39 @@ public class FloorManager : MonoBehaviour
         floorObjects[x, y].GetComponent<Renderer>().material.color = c;
     }
 
-    public void ResetBlock(int x, int y)
+    public void WalkBlock(int x, int y)
     {
         floor[x, y].value = 0;
         ColorBlock(x, y, Color.white);
-        floorObjects[x, y].transform.localScale = Vector3.one * 0.92f;
+        ResizeBlock(x, y);
     }
 
     public void WallBlock(int x, int y)
     {
         floor[x, y].value = 1;
         ColorBlock(x, y, Color.black);
-        floorObjects[x, y].transform.localScale = new Vector3(0.92f, 2f, 0.92f);
+        ResizeBlock(x, y);
     }
 
     public void RaiseBlock(int x, int y, float h)
     {
         floor[x, y].height += h;
+        ResizeBlock(x, y);
+        floorObjects[x, y].transform.Translate(new Vector3(0, h/2, 0));
     }
 
     public void LowerBlock(int x, int y, float h)
     {
-        floor[x, y].height += h;
+        floor[x, y].height -= h;
+        ResizeBlock(x, y);
+        floorObjects[x, y].transform.Translate(new Vector3(0, -h/2, 0));
 
     }
 
+    public void ResizeBlock(int x, int y)
+    {
+        floorObjects[x, y].transform.localScale = new Vector3(0.92f, 0.92f + floor[x, y].value + floor[x, y].height, 0.92f);
+    }
 
 }
 

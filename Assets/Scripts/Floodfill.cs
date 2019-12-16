@@ -69,7 +69,7 @@ public class Floodfill : MonoBehaviour
                         if (nodes[newX, newY].value <= 0)
                         {
                             nodes[newX, newY].parent = nodes[n.x, n.y];
-                            nodes[newX, newY].value = nodes[n.x, n.y].value + 1;
+                            nodes[newX, newY].value = nodes[n.x, n.y].value + 1 + nodes[n.x, n.y].height - nodes[newX, newY].height;
                             q.Enqueue(new Coord(newX, newY));
                         }
                     }
@@ -117,7 +117,7 @@ public class Floodfill : MonoBehaviour
 
     void FloodFill()
     {
-        int[,] temp = new int[fm.floor.GetLength(0), fm.floor.GetLength(1)];
+        float[,] temp = new float[fm.floor.GetLength(0), fm.floor.GetLength(1)];
         for(int i = 0; i < fm.floor.GetLength(0); i++)
         {
             for(int j = 0; j < fm.floor.GetLength(1); j++)
