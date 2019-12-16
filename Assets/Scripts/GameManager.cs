@@ -142,11 +142,13 @@ public class GameManager : MonoBehaviour
                 if (fm.floor[endX, endY].value == 0)
                 {
                     Debug.Log("Path from [" + startX + ", " + startY + "] to [" + endX + ", " + endY + "] using algorithm " + algorithm );
-                    if (algorithm == 0)
+                    if (algorithm == 0) //Floodfill
                         fm.FloodFill(startX, startY, endX, endY);
-                    else if (algorithm == 1)
+                    else if (algorithm == 1) //Floodfill3D
+                        fm.FloodFill3D(startX, startY, endX, endY);
+                    else if (algorithm == 2) //Greedy
                         fm.Greedy(startX, startY, endX, endY);
-                    else if (algorithm == 2)
+                    else if (algorithm == 3) //AStar
                         fm.AStar(startX, startY, endX, endY);
                 }
                 startX = -1;

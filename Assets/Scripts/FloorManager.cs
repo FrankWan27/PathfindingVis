@@ -9,6 +9,7 @@ public class FloorManager : MonoBehaviour
     public GameObject floorTile;
     public GameObject mazeGen;
     public GameObject floodfill;
+    public GameObject floodfill3D;
     public GameObject greedy;
     public GameObject aStar;
     public int sizeX;
@@ -83,6 +84,15 @@ public class FloorManager : MonoBehaviour
         Floodfill ff = GameObject.Instantiate(floodfill, Vector3.zero, Quaternion.identity).GetComponent<Floodfill>();
 
         ff.StartFlood(startX, startY, endX, endY);
+    }
+
+    public void FloodFill3D(int startX, int startY, int endX, int endY)
+    {
+
+        ClearPath();
+        Floodfill3D ff3d = GameObject.Instantiate(floodfill3D, Vector3.zero, Quaternion.identity).GetComponent<Floodfill3D>();
+
+        ff3d.StartFlood(startX, startY, endX, endY);
     }
 
     public void Greedy(int startX, int startY, int endX, int endY)
@@ -194,9 +204,10 @@ public class FloorManager : MonoBehaviour
 
     public void RaiseBlock(int x, int y, float h)
     {
-        if(floor[x, y].height >= 20)
-            return;
         floor[x, y].height += h;
+
+        if(floor[x, y].height >= 20)
+            floor[x, y].height = 20;
         ResizeBlock(x, y);
         MoveBlock(x, y);
     }

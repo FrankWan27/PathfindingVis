@@ -72,11 +72,11 @@ public class AStar : MonoBehaviour
                         //if not a wall
                         if (fm.floor[newX, newY].value == 0)
                         {
-                            float tempH = nodes[n.x, n.y].value + 1 + Vector2.Distance(new Vector2(newX, newY), new Vector2(endX, endY));
+                            float tempH = nodes[n.x, n.y].value + 1 + Vector2.Distance(new Vector2(newX, newY), new Vector2(endX, endY)) + Tools.HeightDiff(fm.floor[n.x, n.y], fm.floor[newX, newY]);
                             if (tempH < nodes[newX, newY].heuristic)
                             {
                                 nodes[newX, newY].heuristic = tempH;
-                                nodes[newX, newY].value = nodes[n.x, n.y].value + 1;
+                                nodes[newX, newY].value = nodes[n.x, n.y].value + 1 + Tools.HeightDiff(fm.floor[n.x, n.y], fm.floor[newX, newY]);
                                 nodes[newX, newY].parent = nodes[n.x, n.y];
                                 mh.Insert(nodes[newX, newY]);
                             }
@@ -131,8 +131,8 @@ public class AStar : MonoBehaviour
         mh.Insert(nodes[startX, startY]);
         MinHeap mhtemp = new MinHeap();
         mhtemp.Insert(temp[startX, startY]);
-        temp[startX, startY].heuristic = 1 + Vector2.Distance(new Vector2(startX, startY), new Vector2(endX, endY));
-        nodes[startX, startY].heuristic = 1 + Vector2.Distance(new Vector2(startX, startY), new Vector2(endX, endY));
+        temp[startX, startY].heuristic = 1 + Vector2.Distance(new Vector2(startX, startY), new Vector2(endX, endY)) + Tools.HeightDiff(fm.floor[startX, startY], fm.floor[endX, endY]);
+        nodes[startX, startY].heuristic = 1 + Vector2.Distance(new Vector2(startX, startY), new Vector2(endX, endY)) + Tools.HeightDiff(fm.floor[startX, startY], fm.floor[endX, endY]);
 
         nodes[startX, startY].value = 1;
         temp[startX, startY].value = 1;
@@ -147,6 +147,7 @@ public class AStar : MonoBehaviour
             if (n.x == endX && n.y == endY)
             {
                 solution = temp[endX, endY].value;
+                GameObject.Find("GameManager").GetComponent<GameManager>().SetDist(solution);
                 return;
 
             }
@@ -158,12 +159,12 @@ public class AStar : MonoBehaviour
                 if (newX >= 0 && newX < fm.floor.GetLength(0) && newY >= 0 && newY < fm.floor.GetLength(1))
                 {
 
-                    float tempH = temp[n.x, n.y].value + 1 + Vector2.Distance(new Vector2(newX, newY), new Vector2(endX, endY));
+                    float tempH = temp[n.x, n.y].value + 1 + Vector2.Distance(new Vector2(newX, newY), new Vector2(endX, endY)) + Tools.HeightDiff(fm.floor[n.x, n.y], fm.floor[newX, newY]);
                     if(tempH < temp[newX, newY].heuristic)
                     {
-                        solution = Mathf.Max(temp[n.x, n.y].value + 1);
+                        // solution = Mathf.Max(temp[n.x, n.y].value + 1);
                         temp[newX, newY].heuristic = tempH;
-                        temp[newX, newY].value = temp[n.x, n.y].value + 1;
+                        temp[newX, newY].value = temp[n.x, n.y].value + 1 + Tools.HeightDiff(fm.floor[n.x, n.y], fm.floor[newX, newY]);
                         temp[newX, newY].parent = temp[n.x, n.y];
                         mhtemp.Insert(temp[newX, newY]);
                     }       
