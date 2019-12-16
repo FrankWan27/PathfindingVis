@@ -66,10 +66,11 @@ public class Floodfill : MonoBehaviour
                     int newY = n.y + dy[i];
                     if (newX >= 0 && newX < fm.floor.GetLength(0) && newY >= 0 && newY < fm.floor.GetLength(1))
                     {
-                        if (nodes[newX, newY].value <= 0)
+                        float calcDist = nodes[n.x, n.y].value + 1 + Tools.HeightDiff(fm.floor[n.x, n.y], fm.floor[newX, newY]);
+                        if (nodes[newX, newY].value <= 0 || calcDist < nodes[newX, newY].value)
                         {
                             nodes[newX, newY].parent = nodes[n.x, n.y];
-                            nodes[newX, newY].value = nodes[n.x, n.y].value + 1 + nodes[n.x, n.y].height - nodes[newX, newY].height;
+                            nodes[newX, newY].value = calcDist;
                             q.Enqueue(new Coord(newX, newY));
                         }
                     }
@@ -111,30 +112,30 @@ public class Floodfill : MonoBehaviour
         q.Enqueue(new Coord(startX, startY));
 
         //calculate solution in advance to determine colors
-        FloodFill();
+        FloodFillEarly();
 
     }
 
-    void FloodFill()
+    void FloodFillEarly()
     {
         float[,] temp = new float[fm.floor.GetLength(0), fm.floor.GetLength(1)];
         for(int i = 0; i < fm.floor.GetLength(0); i++)
         {
             for(int j = 0; j < fm.floor.GetLength(1); j++)
             {
-                nodes[i, j] = new Node(fm.floor[i, j].x, fm.floor[i, j].y, fm.floor[i, j].value);
+                nodes[i, j] = new Node(fm.floor[i, j].x, fm.floor[i, j].y, fm.floor[i, j].value, fm.floor[i, j].height);
                 temp[i, j] = fm.floor[i, j].value;
             }
         }
 
         //setup for live update version
         nodes[startX, startY].value = 1;
-
+        temp[startX, startY] = 1;
 
         Queue<Coord> tempQ = new Queue<Coord>();
         tempQ.Enqueue(new Coord(startX, startY));
 
-        while(tempQ.Count != 0)
+        while(tempQ.Count > 0)
         {
             int[] dx = { 1, 0, -1, 0 };
             int[] dy = { 0, 1, 0, -1 };
@@ -144,6 +145,8 @@ public class Floodfill : MonoBehaviour
             if (n.x == endX && n.y == endY)
             {
                 solution = temp[endX, endY];
+                GameObject.Find("GameManager").GetComponent<GameManager>().SetDist(solution);
+
                 return;
             }
 
@@ -153,10 +156,12 @@ public class Floodfill : MonoBehaviour
                 int newY = n.y + dy[i];
                 if (newX >= 0 && newX < fm.floor.GetLength(0) && newY >= 0 && newY < fm.floor.GetLength(1))
                 {
-                    if (temp[newX, newY] <= 0)
+                    float calcDist = temp[n.x, n.y] + 1 + Tools.HeightDiff(fm.floor[n.x, n.y], fm.floor[newX, newY]);
+
+                    if (temp[newX, newY] <= 0 || calcDist < temp[newX, newY])
                     {
-                        solution = temp[n.x, n.y] + 1;
-                        temp[newX, newY] = temp[n.x, n.y] + 1;
+                        solution = calcDist;
+                        temp[newX, newY] = calcDist;
                         tempQ.Enqueue(new Coord(newX, newY));
                     }
                 }
