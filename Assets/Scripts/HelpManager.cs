@@ -92,7 +92,7 @@ public class HelpManager : MonoBehaviour
     string floodfillInfo = "This algorithm simply checks every adjacent tile using a queue until it reaches the destination. This algorithm is guarenteed to return the shortest path in a 2D map, but is not guarenteed to return the shortest path in a 3D map.";
     string floodfill3DInfo = "This algorithm is a modification of the floodfill algorithm, and it checks every tile on the map and will backtrack if there is a better path availiable. This modification will guarentee the algorithm to return the shortest path even in a 3D map, but it is terribly inefficient.";
 	string greedyInfo = "This algorithm will always pick the next best adjacent tile, only backtracking when it hits a dead end. This algorithm is very fast, but it is not guarenteed to return the shortest path.";
-	string AStarInfo = "This algorithm assigns heuristics to each tile, and then ...... updated later. This algorithm runs slower than the greedy algorithm, but is still quick and is also guarenteed to return the shortest path.";
+	string AStarInfo = "This algorithm assigns heuristics to each tile, and then goes to the next best tile with the lowest sum of distance from the starting point plus the expected distance to the end point. This algorithm runs slower than the greedy algorithm, but is still quick and is also guarenteed to return the shortest path. Note: Does not work with height currently";
 
 	string clearInfo = "This option will simply generate a blank map.";
 	string wallMazeInfo = "This option will generate a random maze, using the recursive backtracking algorithm. The walls of this maze are wall tiles, which means they are not traversable.";
